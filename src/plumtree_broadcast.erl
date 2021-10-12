@@ -186,7 +186,7 @@ update(LocalState0) ->
                                       peer_service,
                                       partisan_peer_service),
     LocalState = PeerService:decode(LocalState0),
-    % lager:info("Update triggered with: ~p", [LocalState]),
+    % logger:info("Update triggered with: ~p", [LocalState]),
     gen_server:cast(?SERVER, {update, LocalState}).
 
 %% @doc Returns the broadcast servers view of full cluster membership.
@@ -405,7 +405,7 @@ handle_graft({ok, Message}, MessageId, Mod, Round, Root, From, State) ->
     _ = send({broadcast, MessageId, Message, Mod, Round, Root, myself()}, Mod, From),
     State1;
 handle_graft({error, Reason}, _MessageId, Mod, _Round, _Root, _From, State) ->
-    lager:error("unable to graft message from ~p. reason: ~p", [Mod, Reason]),
+    logger:error("unable to graft message from ~p. reason: ~p", [Mod, Reason]),
     State.
 
 neighbors_down(Removed, State) ->
@@ -686,7 +686,7 @@ instrument_transmission(Message, Mod) ->
                 Mod:extract_log_type_and_payload(Message)
             catch
                 _:Error ->
-                    lager:info("Couldn't extract log type and payload. Reason ~p", [Error]),
+                    logger:info("Couldn't extract log type and payload. Reason ~p", [Error]),
                     []
             end,
 
