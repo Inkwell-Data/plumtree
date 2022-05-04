@@ -55,11 +55,11 @@ start_link() ->
 read(Key) ->
     case ets:lookup(?MODULE, Key) of
         [{Key, Value}] ->
-            % lager:info("read key ~p: ~p",
+            % logger:info("read key ~p: ~p",
             %            [Key, Value]),
             {ok, Value};
         _ ->
-            lager:info("unable to find key: ~p",
+            logger:info("unable to find key: ~p",
                        [Key]),
             {error, not_found}
     end.
@@ -113,7 +113,7 @@ code_change(_OldVsn, State, _Extra) ->
 -spec broadcast_data(any()) -> {any(), any()}.
 broadcast_data({Key, _Value} = Data) ->
     MsgId = erlang:phash2(Data),
-    lager:info("broadcast_data(~p), msg id: ~p",
+    logger:info("broadcast_data(~p), msg id: ~p",
                [Data, MsgId]),
     true = ets:insert(msgs_seen, {MsgId, Key}),
     true = ets:insert(?MODULE, Data),
@@ -125,11 +125,11 @@ broadcast_data({Key, _Value} = Data) ->
 merge(MsgId, {Key, _Value} = Payload) ->
     case ets:lookup(msgs_seen, MsgId) of
         [{MsgId, _}] ->
-            lager:info("msg with id ~p has already been seen",
+            logger:info("msg with id ~p has already been seen",
                       [MsgId]),
             false;
         _ ->
-            lager:info("merging(~p, ~p) in local state",
+            logger:info("merging(~p, ~p) in local state",
                        [MsgId, Payload]),
             %% insert the message in the local state
             true = ets:insert(?MODULE, Payload),
@@ -144,11 +144,11 @@ merge(MsgId, {Key, _Value} = Payload) ->
 is_stale(MsgId) ->
     case ets:lookup(msgs_seen, MsgId) of
         [{MsgId, _}] ->
-            lager:info("is_stale(~p): ~p",
+            logger:info("is_stale(~p): ~p",
                        [MsgId, true]),
             true;
         _ ->
-            lager:info("is_stale(~p): ~p",
+            logger:info("is_stale(~p): ~p",
                        [MsgId, false]),
             false
     end.
@@ -158,7 +158,7 @@ is_stale(MsgId) ->
 %% message id. In this case, `stale' is returned.
 -spec graft(any()) -> stale | {ok, any()} | {error, any()}.
 graft(MsgId) ->
-    % lager:info("graft(~p)",
+    % logger:info("graft(~p)",
     %            [MsgId]),
     case ets:lookup(msgs_seen, MsgId) of
         [{MsgId, Key}] ->
