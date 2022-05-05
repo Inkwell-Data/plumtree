@@ -1,6 +1,6 @@
 {application,plumtree,
              [{description,"Epidemic Broadcast Trees"},
-              {vsn,"0.6.0"},
+              {vsn,"0.7.0"},
               {registered,[]},
               {applications,[kernel,stdlib,crypto,partisan]},
               {mod,{plumtree_app,[]}},
